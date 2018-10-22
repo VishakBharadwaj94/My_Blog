@@ -1,11 +1,8 @@
-from flask import Flask, render_template, url_for, redirect, request, session, flash, logging
-from models.model import check_user,user_signup,search_user_by_username
+from flask import render_template, url_for, redirect, request, session, flash, logging
+from blog import app
+from blog.model import check_user,user_signup,search_user_by_username
 from passlib.hash import sha256_crypt
-from forms import RegistrationForm
-
-
-app = Flask(__name__)
-app.config['SECRET_KEY']='Hello'
+from blog.forms import RegistrationForm
 
 
 posts = [
@@ -22,6 +19,7 @@ posts = [
         'date_posted': 'April 21, 2018'
     }
 ]
+
 
 
 @app.route("/")
@@ -101,7 +99,16 @@ def login():
 			session['username']=existing_user['username']
 		
 			flash('Login Sucessful!','success')
-			return redirect(url_for('home'))
+
+			if session.get('prev_page') and session.get('user_id'):
+				session['next_page'] = session['prev_page']
+				session.pop('prev_page')
+				return redirect(url_for(session['next_page']))
+			
+			else:
+
+				return redirect(url_for('home'))
+
 
 
 		else: 
@@ -122,17 +129,24 @@ def login():
 
 @app.route('/logout',methods=['GET','POST'])
 def logout():
-   # remove the username from the session if it is there
-   #session.pop('user_id', None)
-	if session:
-		session.clear()
-		flash('You have logged out','success')
-		return redirect(url_for('home'))
+
+	session.clear()
+	flash('You have logged out','success')
+	return redirect(url_for('home'))
+
+@app.route('/account')
+def account():
+
+	if session.get('next_page')=='account':
+
+		session.pop('next_page')
+		return render_template('account.html')
 
 	else:
-		flash('You have not logged in yet','success')
-		return redirect(url_for('home'))	
+		session['prev_page']='account'
+		error="You have to login to access this page"
+		return render_template('login.html',error=error)
+		
 
+		
 
-if __name__ == '__main__':
-    app.run(debug=True)
