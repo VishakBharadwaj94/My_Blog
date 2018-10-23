@@ -2,5 +2,43 @@
 
 {% block body %}
 
-<h2> Hello! {{ session['username'] }} </h2>
+
+<div class="content-section">
+	<div class="media">
+		<img class="rounded-circle account-img" src="{{img_file}}">
+		<div class="media-body">
+			<h2 class="account-heading"> {{ session['name'] }} </h2>
+			<p class="text-secondary"> {{ session['email'] }} </p><br>
+			<p> New Profile Pic? </p>
+			<p class="text-secondary">
+				<form action="/uploadimage" method="POST" enctype="multipart/form-data" >
+  <input type="file" name="image" value="" accept="image/*">
+  <button name="submit" type="submit" class="btn btn-primary" value="submit"> Change </button>
+</form> </p>
+			
+		</div>
+		
+	</div>
+	<form action='/account' method="POST">
+		<div class="form-group">
+			<label>Change Username </label>
+			<input type="text" name="username"  class = "form-control"  value =  "{{request.form.username}}" placeholder="enter here..." autocomplete="off">
+		</div>
+		<button name="submit" type="submit" class="btn btn-primary" value ="Change uname" > Change </button><br><br>
+
+ 		
+	</form>
+	<form action='/account' method="POST">
+		<div class="form-group">
+			<label> Change Password</label>
+			<input type="password" name="password" class = "form-control" placeholder="enter old password..." value ="{{request.form.password}}"><br>
+			<input type="password" name="npassword" class = "form-control" placeholder="enter new password..." value ="{{request.form.npassword}}"><br>
+			<input type="password" name="rnpassword" class = "form-control" placeholder="re-enter new password..." value ="{{request.form.rnpassword}}">
+		</div>
+	<button name="submit" type="submit" class="btn btn-primary" value="Change password"> Change </button>
+
+ 		
+	</form>
+	
+</div>
 {% endblock %}

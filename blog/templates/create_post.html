@@ -1,0 +1,17 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<h2>Make a Post!</h2>
+<form action="/post/new" method="POST" id='new post'>
+<div class="form-group">
+	<input type="text" name="title" class="form-control" autofocus autocomplete="off" placeholder="enter the title of your new post here..." required>
+
+</div>
+</form>
+<div class="form-group">
+<textarea name ='body'rows="20" cols="70" form="new post" class="form-control" placeholder="enter the body of your post here..." required></textarea>
+</div>
+<button type="submit" class="btn btn-primary" form="new post">Submit</button>
+
+{% endblock %}

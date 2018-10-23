@@ -34,6 +34,7 @@
             <div class="navbar-nav">
               {% if session %}
               <a class="nav-item nav-link" href="/account">Welcome {{ session['username'] }}!</a>
+              <a class="nav-item nav-link" href="/post/new"> Create Post </a>
               <a class="nav-item nav-link" href="/logout">Log Out</a>
               {% else %}
               <a class="nav-item nav-link" href="/login">Login</a>

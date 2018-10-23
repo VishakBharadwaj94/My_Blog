@@ -1,0 +1,20 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+
+<article class="media content-section">
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/'+ post['name']+'.jpg') }}">
+          <div class="media-body">
+            <div class="article-metadata">
+              <a class="mr-2" href="#">{{ post['name'] }}</a>
+              <small class="text-muted">{{ post['date'].strftime('%Y-%m-%d') }}</small>
+            </div>
+            <h2>{{ post['title'] }}</h2>
+            <p class="article-content">{{ post['body'] }}</p>
+          </div>
+        </article>
+        <form action="/delete" method="post">
+        	<input type="hidden" name="id" value="{{ post['id'] }}">
+        <button type="submit" class="btn btn-primary"  method ="POST"> delete post</button>
+        </form>
+{% endblock %}

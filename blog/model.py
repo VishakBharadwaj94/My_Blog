@@ -34,3 +34,39 @@ def search_user_by_username(username):
 
 	else:
 		return None 
+
+def change_password(password,user_id):
+
+	db['users'].update({"_id" : ObjectId(user_id)},{"$set":{"password":password}})
+
+def change_uname(uname,user_id):
+
+	db['users'].update({"_id" : ObjectId(user_id)},{"$set":{"username":uname}})
+
+def add_post_db(post):
+
+	db['posts'].insert_one(post)
+
+	return True
+
+def all_posts():
+
+	results = db['posts'].find({})
+	return results
+
+def find_post(user_id):
+
+	result = db['posts'].find_one({"_id" : ObjectId(user_id)})
+	return result
+
+def delete(id):
+	db['posts'].remove({"_id" : ObjectId(user_id)})
+	return True
+
+
+
+
+
+
+
+
