@@ -59,7 +59,7 @@ def find_post(user_id):
 	result = db['posts'].find_one({"_id" : ObjectId(user_id)})
 	return result
 
-def delete(id):
+def delete(user_id):
 	db['posts'].remove({"_id" : ObjectId(user_id)})
 	return True
 

@@ -19,7 +19,7 @@
 		</div>
 		
 	</div>
-	<form action='/account' method="POST">
+	<form action='/change_username' method="POST">
 		<div class="form-group">
 			<label>Change Username </label>
 			<input type="text" name="username"  class = "form-control"  value =  "{{request.form.username}}" placeholder="enter here..." autocomplete="off">
@@ -28,7 +28,7 @@
 
  		
 	</form>
-	<form action='/account' method="POST">
+	<form action='/change_password' method="POST">
 		<div class="form-group">
 			<label> Change Password</label>
 			<input type="password" name="password" class = "form-control" placeholder="enter old password..." value ="{{request.form.password}}"><br>

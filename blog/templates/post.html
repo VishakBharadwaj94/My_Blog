@@ -14,7 +14,8 @@
           </div>
         </article>
         <form action="/delete" method="post">
-        	<input type="hidden" name="id" value="{{ post['id'] }}">
-        <button type="submit" class="btn btn-primary"  method ="POST"> delete post</button>
-        </form>
+                  <input type="hidden" name="id" value="{{ post['_id'] }}">
+                  <input type="hidden" name="name" value="{{ post['name'] }}">
+                  <button type="submit" class="btn btn-primary"> delete Post </button>
+            </form>
 {% endblock %}

@@ -126,90 +126,105 @@ def logout():
 	flash('You have logged out','success')
 	return redirect(url_for('home'))
 
-@app.route('/account', methods=['GET','POST'])
+@app.route('/account', methods=['GET'])
 def account():
 	# hardcode to rediect to the page you were trying to get to and the app asks you to
 	# login first
-	if request.method == 'GET':
-
-		if session.get('next_page')=='account' or session.get('user_id'):
-
-		
-			img_file=url_for('static',filename='profile_pics/'+session['user_id']+'.jpg')
-
-			import os.path
-
-			if os.path.isfile(img_file):
-				pass
-
-			else:
-
-				img_file=url_for('static',filename='profile_pics/default.jpg')
-			
 
 
-			if session.get('user_id'):
+	if session.get('next_page')=='account' or session.get('user_id'):
 
-				session.pop('next_page',None)
-				return render_template('account.html',title='Account',img_file=img_file)
+	
+		img_file=url_for('static',filename='profile_pics/'+session['user_id']+'.jpg')
 
-			else:
-				
-				return render_template('account.html',title='Account',img_file=img_file)
+		import os.path
 
-
-
-
+		if os.path.isfile(img_file):
+			pass
 
 		else:
-			session['prev_page']='account'
-			error="You have to login to access this page"
-			return render_template('login.html',error=error)
+
+			img_file=url_for('static',filename='profile_pics/default.jpg')
+		
+
+
+		if session.get('user_id'):
+
+			session.pop('next_page',None)
+			return render_template('account.html',title='Account',img_file=img_file)
+
+		else:
 			
+			return render_template('account.html',title='Account',img_file=img_file)
+
+
+
+
+
+	else:
+		session['prev_page']='account'
+		error="You have to login to access this page"
+		return render_template('login.html',error=error)
+
+@app.route('/change_username',methods=['GET','POST'])
+
+def change_username():
+
+	if request.method=='POST':
+
+		present_name = session['username']
+		new_uname = request.form['username']
+
+		if search_user_by_username(new_uname) is not None:
+
+			flash('username exists, enter some other username','danger')
+			return(redirect(url_for('account')))
+
+		else:
+
+			change_uname(new_uname,session['user_id'])
+			flash('your username has been changed has been changed','success')
+			return redirect(url_for('home'))
+
 	else:
 
-		if request.form['submit'] == 'change uname':
+		return(redirect(url_for('account')))
 
-			present_name = session['username']
-			new_uname = request.form['username']
 
-			if search_user_by_username(new_uname) is not None:
+			
+@app.route('/change_password',methods=['GET','POST'])
 
-				flash('username exists, enter some other username','danger')
-				return(render_template(url_for('account')))
+def change_pass():
 
-			else:
+	if request.method=='POST':
 
-				change_uname(new_uname,session['user_id'])
-				flash('your username has been changed has been changed','success')
+		p1 = request.form['npassword']
+		p2 = request.form['rnpassword']
+
+		existing_user = search_user_by_username(session['username'])
+		temp = (sha256_crypt.verify(request.form['password'],existing_user['password']))
+
+		if sha256_crypt.verify(request.form['password'],existing_user['password']):
+
+			if p1==p2:
+				p3=sha256_crypt.encrypt(str(p1))
+				change_password(p3,session['user_id'])
+				flash('password has been changed','success')
 				return redirect(url_for('home'))
 
-
-
-		elif request.form['submit'] == 'change password':
-
-			p1 = request.form['npassword']
-			p2 = request.form['rnpassword']
-
-			existing_user = search_user_by_username(session['username'])
-			temp = (sha256_crypt.verify(request.form['password'],existing_user['password']))
-			if sha256_crypt.verify(request.form['password'],existing_user['password']):
-
-				if p1==p2:
-					p3=sha256_crypt.encrypt(str(p1))
-					change_password(p3,session['user_id'])
-					flash('password has been changed','success')
-					return redirect(url_for('home'))
-
-				else:
-
-					error="New password entries don't match"
-					return render_template('account.html',error=error)
 			else:
+
+				error="New password entries don't match"
+				return render_template('account.html',error=error)
+				
+		else:
 
 				error="Wrong password entered by user"
 				return render_template('account.html',error=error)
 
+	else:
+
+		return(redirect(url_for('account')))	
 
 
 @app.route('/uploadimage', methods=['GET','POST'])
@@ -244,19 +259,33 @@ def new_post():
 @app.route('/post',methods=['POST'])
 
 def post():
-
-
+	
 	post_id = request.form['id']
 	post = find_post(post_id)
+	session['post_id']=str(post['_id'])
 	return render_template('post.html',post=post)
 
 
-@app.route('/delete', methods=['GET','POST'])
+@app.route('/delete', methods=['POST'])
 
 def delete_post():
 
-	post_id = str(request.form['post_id'])
-	post = delete(post_id)
+	post_id = request.form['id']
+	name =  request.form['name']
+	if name ==session['username']:
+
+		post_id = session['post_id']
+		post = delete(post_id)
+		del session['post_id']
+		flash('your post has been deleted','success')
+		return redirect(url_for('home'))
+
+	else:
+
+		flash('you cannot delete this post,redirecting to homepage!','danger')
+		return(redirect(url_for('home')))
+
+
 
 
 
