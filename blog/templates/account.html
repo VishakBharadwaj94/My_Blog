@@ -11,8 +11,8 @@
 			<p class="text-secondary"> {{ session['email'] }} </p><br>
 			<p> New Profile Pic? </p>
 			<p class="text-secondary">
-				<form action="/uploadimage" method="POST" enctype="multipart/form-data" >
-  <input type="file" name="image" value="" accept="image/*">
+				<form action="/uploadimage" method="post" enctype="multipart/form-data" >
+  <input type="file" name="image" value="" accept="image">
   <button name="submit" type="submit" class="btn btn-primary" value="submit"> Change </button>
 </form> </p>
 			

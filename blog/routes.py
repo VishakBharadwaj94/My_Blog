@@ -1,4 +1,5 @@
-import os	
+import os
+import os.path
 from flask import render_template, url_for, redirect, request, session, flash, logging
 from blog import app
 from blog.model import check_user,user_signup,search_user_by_username,change_password,change_uname,add_post_db,all_posts,find_post,delete
@@ -128,34 +129,31 @@ def logout():
 
 @app.route('/account', methods=['GET'])
 def account():
-	# hardcode to rediect to the page you were trying to get to and the app asks you to
-	# login first
-
 
 	if session.get('next_page')=='account' or session.get('user_id'):
 
 	
-		img_file=url_for('static',filename='profile_pics/'+session['user_id']+'.jpg')
+		name = session['username']+'.jpg'
+		pic_path=os.path.join(app.root_path,'static/profile_pics',name)
 
-		import os.path
-
-		if os.path.isfile(img_file):
+		if os.path.isfile(pic_path):
 			pass
 
 		else:
 
-			img_file=url_for('static',filename='profile_pics/default.jpg')
+			name = 'default.jpg'
+			pic_path=os.path.join(app.root_path,'static/profile_pics',name)
 		
 
 
 		if session.get('user_id'):
 
 			session.pop('next_page',None)
-			return render_template('account.html',title='Account',img_file=img_file)
+			return render_template('account.html',title='Account',img_file=pic_path)
 
 		else:
 			
-			return render_template('account.html',title='Account',img_file=img_file)
+			return render_template('account.html',title='Account',img_file=pic_path)
 
 
 
@@ -231,12 +229,27 @@ def change_pass():
 
 def uploadimage():
 
-	pic = request.files.get('image')
-	name = session['user_id'] + '.jpg'
-	pic_path=os.path.join(app.root_path,'static/profile_pics',name)
-	pic.save(pic_path)
-	return redirect(url_for('account'))
 
+	try:
+		pic = request.files['image']
+	except NameError:
+		pic = None
+	except KeyError:
+		pic = None
+
+	if pic is None:
+
+		flash('No picture uploaded','danger')
+		return redirect(url_for('account'))
+	else:
+		
+		name = session['username'] + '.jpg'
+		pic_path=os.path.join(app.root_path,'static/profile_pics',name)
+		pic.save(pic_path)
+		return redirect(url_for('account'))
+
+
+ 
 @app.route('/post/new', methods=['GET','POST'])
 
 def new_post():

@@ -13,9 +13,12 @@
             <p class="article-content">{{ post['body'] }}</p>
           </div>
         </article>
+        {% if session['name'] %}
         <form action="/delete" method="post">
                   <input type="hidden" name="id" value="{{ post['_id'] }}">
                   <input type="hidden" name="name" value="{{ post['name'] }}">
-                  <button type="submit" class="btn btn-primary"> delete Post </button>
+                  <button type="submit" class="btn btn-danger btn-sm m1"> delete Post </button>
             </form>
+        {% endif %}
+
 {% endblock %}
