@@ -2,8 +2,13 @@
 {% block body %}
     {% for post in posts %}
 
+
         <article class="media content-section">
+          {% if post['dp'] == "no" %}
+          <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/default.jpg') }}">
+          {% else %}
           <img class="rounded-circle article-img" src="{{ url_for('static', filename='profile_pics/'+ post['name']+'.jpg') }}">
+          {% endif %}
           <div class="media-body">
             <div class="article-metadata">
                 

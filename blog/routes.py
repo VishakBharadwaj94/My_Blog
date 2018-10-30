@@ -2,18 +2,25 @@ import os
 import os.path
 from flask import render_template, url_for, redirect, request, session, flash, logging
 from blog import app
-from blog.model import check_user,user_signup,search_user_by_username,change_password,change_uname,add_post_db,all_posts,find_post,delete
+from blog.model import check_user,user_signup,search_user_by_username,change_password,change_uname,add_post_db,all_posts,find_post,delete,check_pic,pic_status
 from passlib.hash import sha256_crypt
 from blog.forms import RegistrationForm
+from blog.nocache import nocache
 from PIL import Image 
 import datetime
 
 
 
-
+@app.after_request
+def add_header(response):
+    
+    response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
+    response.headers['Cache-Control'] = 'public, max-age=0'
+    return response
 
 @app.route("/")
 @app.route("/home")
+@nocache
 def home():
 
 	posts=all_posts()
@@ -34,7 +41,7 @@ def contact():
 #follow the below format in wtforms, 1st create a class for every form needed
 
 
-@app.route("/register",methods=['GET','POST'])
+@app.route("/signup",methods=['GET','POST'])
 
 def register():
 
@@ -132,15 +139,16 @@ def account():
 
 	if session.get('next_page')=='account' or session.get('user_id'):
 
-	
+		default = False
 		name = session['username']+'.jpg'
 		pic_path=os.path.join(app.root_path,'static/profile_pics',name)
 
 		if os.path.isfile(pic_path):
-			pass
+			session['pic']=True
+			pass 	
 
 		else:
-
+			default = True
 			name = 'default.jpg'
 			pic_path=os.path.join(app.root_path,'static/profile_pics',name)
 		
@@ -149,11 +157,11 @@ def account():
 		if session.get('user_id'):
 
 			session.pop('next_page',None)
-			return render_template('account.html',title='Account',img_file=pic_path)
+			return render_template('account.html',title='Account',default=default)
 
 		else:
 			
-			return render_template('account.html',title='Account',img_file=pic_path)
+			return render_template('account.html',title='Account',default=default)
 
 
 
@@ -246,9 +254,24 @@ def uploadimage():
 		name = session['username'] + '.jpg'
 		pic_path=os.path.join(app.root_path,'static/profile_pics',name)
 		pic.save(pic_path)
+		pic_status('yes',session['username'])
 		return redirect(url_for('account'))
 
+@app.route("/remove_pic",methods=['GET','POST'])
 
+def remove():
+
+	if request.method=='GET':
+
+		return(redirect(url_for('account')))
+
+	else:
+		name = session['username'] + '.jpg'
+		pic_path=os.path.join(app.root_path,'static/profile_pics',name)
+		os.remove(pic_path)
+		session.pop('pic',None)
+		pic_status('no',session['username'])
+		return(redirect(url_for('account')))
  
 @app.route('/post/new', methods=['GET','POST'])
 
@@ -264,6 +287,7 @@ def new_post():
 		post_info['body'] = request.form['body']	
 		post_info['name'] = session['username']
 		post_info['date'] = datetime.datetime.now()
+		post_info['dp'] = check_pic(session['username'])
 		add_post_db(post_info)	
 		flash('your post has been created!','success')
 		return redirect(url_for('home'))
@@ -298,6 +322,14 @@ def delete_post():
 		flash('you cannot delete this post,redirecting to homepage!','danger')
 		return(redirect(url_for('home')))
 
+@app.route("/posts",methods=['POST'])
+
+def user_posts():
+
+	name = request.form['search']
+	import pdb;pdb.set_trace()
+	posts= find_posts_by_title(name)
+	return render_template('home.html',posts=posts)
 
 
 

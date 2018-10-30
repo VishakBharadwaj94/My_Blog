@@ -1,3 +1,4 @@
+import pymongo
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 
@@ -51,7 +52,7 @@ def add_post_db(post):
 
 def all_posts():
 
-	results = db['posts'].find({})
+	results = db['posts'].find({}).sort('date',pymongo.DESCENDING)
 	return results
 
 def find_post(user_id):
@@ -59,9 +60,26 @@ def find_post(user_id):
 	result = db['posts'].find_one({"_id" : ObjectId(user_id)})
 	return result
 
+
 def delete(user_id):
 	db['posts'].remove({"_id" : ObjectId(user_id)})
 	return True
+
+def check_pic(name):
+	result = db['posts'].find_one({"name" : name })
+	if results['pic']=='yes':
+		return 'yes'
+
+	else:
+
+		return 'no'
+
+def pic_status(status,name):
+
+	db['users'].update({"username" : name },{"$set":{"dp":status}})
+
+
+
 
 
 

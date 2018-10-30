@@ -29,11 +29,15 @@
             <div class="navbar-nav mr-auto">
               <a class="nav-item nav-link" href="/">Home</a>
               <a class="nav-item nav-link" href="/about">About</a>
+              <form method="post" action="/posts">
+                <input type="text" name="search" autocomplete="off" placeholder="search post name here ...">
+                <input type="submit" name="submit" value="submit">
+              </form>
             </div>
             <!-- Navbar Right Side -->
             <div class="navbar-nav">
               {% if session %}
-              <a class="nav-item nav-link" href="/account">Welcome {{ session['username'] }}!</a>
+              <a class="nav-item nav-link" href="/account">Account</a>
               <a class="nav-item nav-link" href="/post/new"> Create Post </a>
               <a class="nav-item nav-link" href="/logout">Log Out</a>
               {% else %}
@@ -49,18 +53,7 @@
       <div class="row">
         <div class="col-md-8">
           {% block body %}{% endblock %}
-        </div>
-        <div class="col-md-4">
-          <div class="content-section">
-            <h3>Sidebar</h3>
-            <p class='text-muted'><!--Put some stuff here later -->
-              <ul class="list-group">
-                <a href="#"><li class="list-group-item list-group-item-light">Posts</li></a>
-                <a href="#"><li class="list-group-item list-group-item-light">Search Website</li></a>
-              </ul>
-            </p>
-          </div>
-        </div>
+        </div>      
       </div>
     </main>
 

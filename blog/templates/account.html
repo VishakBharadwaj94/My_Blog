@@ -5,8 +5,13 @@
 
 <div class="content-section">
 	<div class="media">
-		<img class="rounded-circle account-img" src="{{img_file}}">
+		{% if default %}
+		<img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_pics/default.jpg') }}" alt="display pic" >
 		<div class="media-body">
+		{% else %}
+		<img class="rounded-circle account-img" src="{{ url_for('static', filename='profile_pics/'+ session['username']+'.jpg') }}" alt="display pic" >
+		<div class="media-body">
+		{% endif %}
 			<h2 class="account-heading"> {{ session['name'] }} </h2>
 			<p class="text-secondary"> {{ session['email'] }} </p><br>
 			<p> New Profile Pic? </p>
@@ -14,6 +19,11 @@
 				<form action="/uploadimage" method="post" enctype="multipart/form-data" >
   <input type="file" name="image" value="" accept="image">
   <button name="submit" type="submit" class="btn btn-primary" value="submit"> Change </button>
+</form> </p>
+
+	<p class="text-secondary">
+				<form action="/remove_pic" method="post" >
+  <button name="submit" type="submit" class="btn btn-primary" value="submit"> Delete profile Pic</button>
 </form> </p>
 			
 		</div>
