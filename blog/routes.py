@@ -41,7 +41,7 @@ def contact():
 #follow the below format in wtforms, 1st create a class for every form needed
 
 
-@app.route("/signup",methods=['GET','POST'])
+@app.route("/register",methods=['GET','POST'])
 
 def register():
 
