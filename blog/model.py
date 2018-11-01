@@ -3,6 +3,7 @@ from pymongo import MongoClient
 from bson.objectid import ObjectId
 
 
+
 client = MongoClient()
 db = client['blogs']
 
@@ -52,7 +53,14 @@ def add_post_db(post):
 
 def all_posts():
 
-	results = db['posts'].find({}).sort('date',pymongo.DESCENDING)
+	#offset = 5
+	#limit  = 5
+
+	#f_post = db['posts'].find({}).sort('date',pymongo.DESCENDING)
+	#l_post = f_post[offset]['date']
+
+	#results = db['posts'].find({"date":{"lte":l_post}}).sort('date',pymongo.DESCENDING).limit(limit)
+	results = db['posts'].find().sort('date',pymongo.DESCENDING)
 	return results
 
 def find_post(user_id):
@@ -67,16 +75,23 @@ def delete(user_id):
 
 def check_pic(name):
 	result = db['posts'].find_one({"name" : name })
-	if results['pic']=='yes':
-		return 'yes'
+	if result is None:
 
+		return None
 	else:
+		
+		if result.get('pic')=='yes':
+			return 'yes'
 
-		return 'no'
+		else:
+
+			return 'no'
 
 def pic_status(status,name):
 
 	db['users'].update({"username" : name },{"$set":{"dp":status}})
+	db['posts'].update({"name" : name },{"$set":{"dp":status}},multi=True,upsert=False)
+
 
 
 
